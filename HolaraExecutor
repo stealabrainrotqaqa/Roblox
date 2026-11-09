@@ -1,0 +1,29 @@
+local request = request or http_request or syn.request
+
+local TUNNEL_URL = "https://frugally-geometric-lurk.ngrok-free.dev"
+local SERVER_URL = TUNNEL_URL .. "/get-script"
+
+print("[Holara Bridge]: Roblox dinleme modu aktif!")
+
+task.spawn(function()
+    while task.wait(0.5) do
+        local success, response = pcall(function()
+            return request({
+                Url = SERVER_URL,
+                Method = "GET"
+            })
+        end)
+
+        if success and response and response.Body and response.Body ~= "" then
+            local scriptToRun = response.Body
+            print("[Holara Bridge]: Yeni script alındı, çalıştırılıyor...")
+            
+            local func, err = loadstring(scriptToRun)
+            if func then
+                task.spawn(func)
+            else
+                warn("[Holara Derleme Hatası]:", err)
+            end
+        end
+    end
+end)
